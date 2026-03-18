@@ -5,6 +5,10 @@ import android.util.Log.i
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -43,29 +48,66 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = "Login"
+                        startDestination = "Login",
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween ( 1000)
+                            )
+                        },
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope
+                                    .SlideDirection.Left,
+                                animationSpec = tween (1000)
+                            )
+                        }
                     ) {
-                        composable (route = "login"){ LoginScreen(navController = navController)}
-                        composable (route = "Menu"){ MenuScreen(navController = navController)}
-                        composable (route = "Perfil/{nome}"){
+                        composable(route = "login",
+                            exitTransition = {
+                                slideOutOfContainer(
+                                    towards = AnimatedContentTransitionScope
+                                        .SlideDirection.Up,
+                                    animationSpec = tween (1000)
+                                ) + fadeOut(animationSpec = tween (1000))
+                            }
+                            ) { LoginScreen(navController = navController) }
+                        composable(route = "Menu") { MenuScreen(navController = navController) }
+                        composable(
+                            route = "Perfil/{nome}/{idade}",
+                        arguments = listOf(
+                            navArgument("nome"){
+                                type = NavType.StringType
+                            },
+                            navArgument(name = "idade") {
+                                type = NavType.IntType
+                            }
+                        )
+                        ) {
                             val nome = it.arguments?.getString("nome")
+                            val idade = it.arguments?.getInt("idade")
+
                             PerfilScreen(
                                 navController = navController,
-                                nome = nome!!
+                                nome = nome!!,
+                                idade = idade!!
 
-                            )}
-                        composable (route = "Pedidos?numeroPedido={numeroPedido}",
+                            )
+                        }
+                        composable(
+                            route = "Pedidos?numeroPedido={numeroPedido}",
                             arguments = listOf(
-                                navArgument("numeroPedido"){
+                                navArgument("numeroPedido") {
                                     defaultValue = "Sem Pedidos"
                                 }
                             )
-                        )  {
+                        ) {
                             val numeroPedido = it.arguments?.getString("numeroPedido")
                             PedidosScreen(
                                 navController = navController,
                                 numeroPedido = numeroPedido!!
-                                )}
+                            )
+                        }
                     }
 
 //                    LoginScreen()
@@ -77,4 +119,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

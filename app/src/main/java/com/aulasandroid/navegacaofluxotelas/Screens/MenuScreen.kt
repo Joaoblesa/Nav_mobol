@@ -40,7 +40,7 @@ fun MenuScreen( navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
             Button(
-                onClick = { navController.navigate("Perfil/joao") },
+                onClick = { navController.navigate("Perfil/joao/17") },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White
                 ),
@@ -66,7 +66,7 @@ fun MenuScreen( navController: NavController) {
                 )
             }
             Button(
-                onClick = { navController.navigate("login") },
+                onClick = { navController.popBackStack() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White
                 ),
